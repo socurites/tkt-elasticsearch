@@ -9,7 +9,7 @@
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<lucene.version>4.10.3</lucene.version>
-		<twitter-korean.version>2.4.2</twitter-korean.version>
+		<twitter-korean.version>4.1.4</twitter-korean.version>
 		<junit.version>4.11</junit.version>
 		<elasticsearch.version>1.7.2</elasticsearch.version>
 	</properties>
