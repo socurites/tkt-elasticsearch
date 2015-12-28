@@ -10,8 +10,11 @@ import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.AttributeFactory;
 
-import com.twitter.penguin.korean.TwitterKoreanProcessor.KoreanSegment;
+import scala.collection.Seq;
+
+import com.twitter.penguin.korean.KoreanTokenJava;
 import com.twitter.penguin.korean.TwitterKoreanProcessorJava;
+import com.twitter.penguin.korean.tokenizer.KoreanTokenizer.KoreanToken;
 
 /**
  * Lucene Korean Tokenizer using twitter-korean-text
@@ -20,20 +23,17 @@ import com.twitter.penguin.korean.TwitterKoreanProcessorJava;
  *
  */
 public class TktKoreanTokenizer extends Tokenizer {
-	/** Java wrapper for TwitterKoreanProcessor. */
-	private TwitterKoreanProcessorJava processor = null;
-
 	/** whether input stream was read as a string. */
 	private boolean isInputRead = false;
-	/** current index of segment buffers. */
-	private int segmentIndex = 0;
-	/** segment buffers. */
-	List<KoreanSegment> segments = null;
+	/** current index of token buffers. */
+	private int tokenIndex = 0;
+	/** token buffers. */
+	List<KoreanTokenJava> tokenBuffer = null;
 
 	/** whether to normalize text before tokenization. */
-	private boolean disableNormalize = false;
+	private boolean enableNormalize = true;
 	/** whether to stem text before tokenization. */
-	private boolean disableStemmer = false;
+	private boolean enableStemmer = true;
 
 	private CharTermAttribute charTermAttribute = null;
 	private OffsetAttribute offsetAttribute = null;
@@ -51,10 +51,8 @@ public class TktKoreanTokenizer extends Tokenizer {
 	public TktKoreanTokenizer(Reader input, boolean disableNormalize, boolean disableStemmer) {
 		super(AttributeFactory.DEFAULT_ATTRIBUTE_FACTORY, input);
 		
-		this.disableNormalize = disableNormalize;
-		this.disableStemmer = disableStemmer;
-		
-		this.processor = new TwitterKoreanProcessorJava.Builder().build();
+		this.enableNormalize = disableNormalize;
+		this.enableStemmer = disableStemmer;
 		
 		initAttributes();
 	}
@@ -69,15 +67,20 @@ public class TktKoreanTokenizer extends Tokenizer {
 		if (this.isInputRead == false) {
 			this.isInputRead = true;
 			CharSequence text = readText();
-			System.out.println(text);
-			this.segments = this.processor.tokenizeWithIndex(text);
+			Seq<KoreanToken> tokens = TwitterKoreanProcessorJava.tokenize(text);
+			
+			if ( this.enableStemmer ) {
+				tokens  = TwitterKoreanProcessorJava.stem(tokens);
+			}
+			
+			this.tokenBuffer = TwitterKoreanProcessorJava.tokensToJavaKoreanTokenList(tokens);
 		}
-
-		if (this.segments == null || this.segments.isEmpty() || segmentIndex >= this.segments.size() ) {
+		
+		if (this.tokenBuffer == null || this.tokenBuffer.isEmpty() || tokenIndex >= this.tokenBuffer.size() ) {
 			return false;
 		}
 
-		setAttributes(this.segments.get(segmentIndex++));
+		setAttributes(this.tokenBuffer.get(tokenIndex++));
 
 		return true;
 	}
@@ -97,10 +100,10 @@ public class TktKoreanTokenizer extends Tokenizer {
 	 * 
 	 * @param token
 	 */
-	private void setAttributes(KoreanSegment segment) {
-		charTermAttribute.copyBuffer(segment.token().text().toCharArray(), 0, segment.length());
-		offsetAttribute.setOffset(segment.start(), segment.start() + segment.length());
-		typeAttribute.setType(segment.token().pos().toString());
+	private void setAttributes(KoreanTokenJava token) {
+		charTermAttribute.append(token.getText());
+		offsetAttribute.setOffset(token.getOffset(), token.getOffset() + token.getLength());
+		typeAttribute.setType(token.getPos().toString());
 		
 	}
 
@@ -118,18 +121,10 @@ public class TktKoreanTokenizer extends Tokenizer {
 			text.append(new String(tmp, 0, len));
 		}
 		
-		if ( this.disableNormalize && this.disableStemmer ) {
-			System.out.println(1);
-			return text.toString();
-		} else if ( !this.disableNormalize && this.disableStemmer ) {
-			System.out.println(2);
-			return processor.normalize(text.toString());
-		} else if ( this.disableNormalize && !this.disableStemmer ) {
-			System.out.println(3);
-			return processor.stem(text.toString()).text();
+		if ( this.enableNormalize ) {
+			return TwitterKoreanProcessorJava.normalize(text.toString());
 		} else {
-			System.out.println(4);
-			return processor.stem(processor.normalize(text.toString())).text();
+			return text.toString();
 		}
 		
 	}
@@ -139,8 +134,8 @@ public class TktKoreanTokenizer extends Tokenizer {
 	 */
 	private void initializeState() {
 		this.isInputRead = false;
-		this.segmentIndex = 0;
-		this.segments = null;
+		this.tokenIndex = 0;
+		this.tokenBuffer = null;
 	}
 
 	/*
