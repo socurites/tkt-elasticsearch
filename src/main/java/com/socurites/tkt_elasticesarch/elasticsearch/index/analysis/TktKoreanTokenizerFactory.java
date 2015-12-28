@@ -21,9 +21,9 @@ import com.socurites.tkt_elasticesarch.lucene.tokenizer.TktKoreanTokenizer;
  */
 public class TktKoreanTokenizerFactory extends AbstractTokenizerFactory {
 	/** whether to normalize text before tokenization. */
-	private boolean disableNormalize = false;
+	private boolean enableNormalize = true;
 	/** whether to stem text before tokenization. */
-	private boolean disableStemmer = false;
+	private boolean enableStemmer = true;
 
 	/**
 	 * Creator.
@@ -50,8 +50,8 @@ public class TktKoreanTokenizerFactory extends AbstractTokenizerFactory {
 	 * @param settings
 	 */
 	private void configureTktTokenizer(Environment env, Settings settings) {
-		this.disableNormalize = settings.getAsBoolean("disableNormalize", false);
-		this.disableStemmer = settings.getAsBoolean("disableStemmer", false);
+		this.enableNormalize = settings.getAsBoolean("enableNormalize", true);
+		this.enableStemmer = settings.getAsBoolean("enableStemmer", true);
 	}
 
 	/* (non-Javadoc)
@@ -59,7 +59,7 @@ public class TktKoreanTokenizerFactory extends AbstractTokenizerFactory {
 	 */
 	@Override
 	public Tokenizer create(Reader reader) {
-		Tokenizer tokenizer = new TktKoreanTokenizer(reader, this.disableNormalize, this.disableStemmer);
+		Tokenizer tokenizer = new TktKoreanTokenizer(reader, this.enableNormalize, this.enableStemmer);
 
 		return tokenizer;
 	}
