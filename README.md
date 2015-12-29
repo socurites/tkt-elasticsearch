@@ -4,7 +4,7 @@ elasticsearch용 한국어 형태소 분석기 플러그인 / korean analyzer fo
 ## Overview
 [twitter-korean-text](https://github.com/twitter/twitter-korean-text)를 기반으로 elasticsearch용 tokenizer로 사용할 수 있도록 플러그인으로 제작했습니다.
 
-twitter-korean-text는 2.4.2, elaisticsearch는 1.7.2 버전으로 테스트했습니다.
+twitter-korean-text는 4.1.4, elaisticsearch는 1.7.2 버전으로 테스트했습니다.
 
 ## Install
 현재 버전(0.1.0)의 jar파일을 다운로드하여 설치한 후 재기동한다.
