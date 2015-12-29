@@ -129,3 +129,60 @@ PUT /test/
 
 GET /test/_analyze?analyzer=custom-analyzer&text=한국어를 처리하는 예시입니닼ㅋㅋㅋㅋㅋ
 ```
+{
+   "tokens": [
+      {
+         "token": "한국어",
+         "start_offset": 0,
+         "end_offset": 3,
+         "type": "Noun",
+         "position": 1
+      },
+      {
+         "token": "를",
+         "start_offset": 3,
+         "end_offset": 4,
+         "type": "Josa",
+         "position": 2
+      },
+      {
+         "token": "처리",
+         "start_offset": 5,
+         "end_offset": 7,
+         "type": "Noun",
+         "position": 3
+      },
+      {
+         "token": "하다",
+         "start_offset": 7,
+         "end_offset": 9,
+         "type": "Verb",
+         "position": 4
+      },
+      {
+         "token": "예시",
+         "start_offset": 10,
+         "end_offset": 12,
+         "type": "Noun",
+         "position": 5
+      },
+      {
+         "token": "이다",
+         "start_offset": 12,
+         "end_offset": 15,
+         "type": "Adjective",
+         "position": 6
+      },
+      {
+         "token": "ㅋㅋ",
+         "start_offset": 15,
+         "end_offset": 17,
+         "type": "KoreanParticle",
+         "position": 7
+      }
+   ]
+}
+결과:
+```json
+
+```
