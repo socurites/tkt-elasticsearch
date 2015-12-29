@@ -40,7 +40,7 @@ public class TktKoreanTokenizer extends Tokenizer {
 	private TypeAttribute typeAttribute = null;
 	
 	public TktKoreanTokenizer(Reader input) {
-		this(input, false, false);
+		this(input, true, true);
 	}
 
 	/**
@@ -48,11 +48,11 @@ public class TktKoreanTokenizer extends Tokenizer {
 	 * 
 	 * @param input
 	 */
-	public TktKoreanTokenizer(Reader input, boolean disableNormalize, boolean disableStemmer) {
+	public TktKoreanTokenizer(Reader input, boolean enableNormalize, boolean enableStemmer) {
 		super(AttributeFactory.DEFAULT_ATTRIBUTE_FACTORY, input);
 		
-		this.enableNormalize = disableNormalize;
-		this.enableStemmer = disableStemmer;
+		this.enableNormalize = enableNormalize;
+		this.enableStemmer = enableStemmer;
 		
 		initAttributes();
 	}
@@ -65,6 +65,10 @@ public class TktKoreanTokenizer extends Tokenizer {
 		clearAttributes();
 
 		if (this.isInputRead == false) {
+			System.out.println("inc: " + this.enableNormalize);
+			System.out.println("inc: " + this.enableStemmer);
+			
+			
 			this.isInputRead = true;
 			CharSequence text = readText();
 			Seq<KoreanToken> tokens = TwitterKoreanProcessorJava.tokenize(text);

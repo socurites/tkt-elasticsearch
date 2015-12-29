@@ -104,3 +104,28 @@ GET /test/_analyze?analyzer=custom-analyzer&text=한국어를 처리하는 예�
    ]
 }
 ```
+
+### 정규화:on / 스테밍: on (default)
+```json
+DELETE /test/
+
+PUT /test/
+{
+    "index" : {
+        "analysis" : {
+            "analyzer" : {
+                "custom-analyzer" : {
+                    "tokenizer" : "custom-tokenizer"
+                }
+            },
+            "tokenizer": {
+              "custom-tokenizer" : {
+                "type": "tkt-korean-tokenizer"
+              }
+            }
+        }
+    }
+}
+
+GET /test/_analyze?analyzer=custom-analyzer&text=한국어를 처리하는 예시입니닼ㅋㅋㅋㅋㅋ
+```

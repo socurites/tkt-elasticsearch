@@ -23,7 +23,6 @@ public class TktKoreanTokenizerPlugin extends AbstractPlugin {
 	}
 
 	public void onModule(AnalysisModule module) {
-		module.addTokenizer("tkt-korean-tokenizer",
-				TktKoreanTokenizerFactory.class);
+		module.addTokenizer("tkt-korean-tokenizer",	TktKoreanTokenizerFactory.class);
 	}
 }
