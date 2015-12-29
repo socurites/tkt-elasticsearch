@@ -129,6 +129,9 @@ PUT /test/
 
 GET /test/_analyze?analyzer=custom-analyzer&text=한국어를 처리하는 예시입니닼ㅋㅋㅋㅋㅋ
 ```
+
+결과:
+```json
 {
    "tokens": [
       {
@@ -182,7 +185,5 @@ GET /test/_analyze?analyzer=custom-analyzer&text=한국어를 처리하는 예�
       }
    ]
 }
-결과:
-```json
 
 ```
