@@ -2,6 +2,7 @@ package com.socurites.tkt_elasticesarch.lucene.tokenizer;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.analysis.Tokenizer;
@@ -12,8 +13,10 @@ import org.apache.lucene.util.AttributeFactory;
 
 import scala.collection.Seq;
 
+import com.twitter.penguin.korean.KoreanPosJava;
 import com.twitter.penguin.korean.KoreanTokenJava;
 import com.twitter.penguin.korean.TwitterKoreanProcessorJava;
+import com.twitter.penguin.korean.phrase_extractor.KoreanPhraseExtractor.KoreanPhrase;
 import com.twitter.penguin.korean.tokenizer.KoreanTokenizer.KoreanToken;
 
 /**
@@ -34,13 +37,15 @@ public class TktKoreanTokenizer extends Tokenizer {
 	private boolean enableNormalize = true;
 	/** whether to stem text before tokenization. */
 	private boolean enableStemmer = true;
+	/** whtere to enable phrase parsing. */
+	private boolean enablePhrase = false;
 
 	private CharTermAttribute charTermAttribute = null;
 	private OffsetAttribute offsetAttribute = null;
 	private TypeAttribute typeAttribute = null;
 	
 	public TktKoreanTokenizer(Reader input) {
-		this(input, true, true);
+		this(input, true, true, false);
 	}
 
 	/**
@@ -48,11 +53,12 @@ public class TktKoreanTokenizer extends Tokenizer {
 	 * 
 	 * @param input
 	 */
-	public TktKoreanTokenizer(Reader input, boolean enableNormalize, boolean enableStemmer) {
+	public TktKoreanTokenizer(Reader input, boolean enableNormalize, boolean enableStemmer, boolean enablePhrase) {
 		super(AttributeFactory.DEFAULT_ATTRIBUTE_FACTORY, input);
 		
 		this.enableNormalize = enableNormalize;
 		this.enableStemmer = enableStemmer;
+		this.enablePhrase = enablePhrase;
 		
 		initAttributes();
 	}
@@ -77,7 +83,16 @@ public class TktKoreanTokenizer extends Tokenizer {
 				tokens  = TwitterKoreanProcessorJava.stem(tokens);
 			}
 			
-			this.tokenBuffer = TwitterKoreanProcessorJava.tokensToJavaKoreanTokenList(tokens);
+			if ( this.enablePhrase ) {
+				List<KoreanPhrase> phrases = TwitterKoreanProcessorJava.extractPhrases(tokens, true, true);
+				this.tokenBuffer = new ArrayList<KoreanTokenJava>();
+				for ( KoreanPhrase phrase : phrases ) {
+					this.tokenBuffer.add(new KoreanTokenJava(phrase.text(), KoreanPosJava.valueOf(phrase.pos().toString()), phrase.offset(), phrase.length(), false));
+				}
+				
+			} else {
+				this.tokenBuffer = TwitterKoreanProcessorJava.tokensToJavaKoreanTokenList(tokens);
+			}
 		}
 		
 		if (this.tokenBuffer == null || this.tokenBuffer.isEmpty() || tokenIndex >= this.tokenBuffer.size() ) {

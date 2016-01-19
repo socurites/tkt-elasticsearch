@@ -24,6 +24,8 @@ public class TktKoreanTokenizerFactory extends AbstractTokenizerFactory {
 	private boolean enableNormalize = true;
 	/** whether to stem text before tokenization. */
 	private boolean enableStemmer = true;
+	/** whtere to enable phrase parsing. */
+	private boolean enablePhrase = false;
 
 	/**
 	 * Creator.
@@ -59,7 +61,7 @@ public class TktKoreanTokenizerFactory extends AbstractTokenizerFactory {
 	 */
 	@Override
 	public Tokenizer create(Reader reader) {
-		Tokenizer tokenizer = new TktKoreanTokenizer(reader, this.enableNormalize, this.enableStemmer);
+		Tokenizer tokenizer = new TktKoreanTokenizer(reader, this.enableNormalize, this.enableStemmer, this.enablePhrase);
 
 		return tokenizer;
 	}
